@@ -28,10 +28,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /** A read-only view of an array of key-value pairs. */
+@Immutable
 @SuppressWarnings("unchecked")
 public final class ReadOnlyArrayMap<K, V> extends AbstractMap<K, V> {
 
@@ -47,6 +50,9 @@ public final class ReadOnlyArrayMap<K, V> extends AbstractMap<K, V> {
   private final int size;
 
   private ReadOnlyArrayMap(List<Object> array) {
+    if (array.size() % 2 != 0) {
+      throw new IllegalArgumentException("Invalid array size");
+    }
     this.array = array;
     this.size = array.size() / 2;
   }
@@ -247,9 +253,7 @@ public final class ReadOnlyArrayMap<K, V> extends AbstractMap<K, V> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-      if (c == null) {
-        return false;
-      }
+      Objects.requireNonNull(c, "specified collection is null");
       if (c.isEmpty()) {
         return true;
       }
